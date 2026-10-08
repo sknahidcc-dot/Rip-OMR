@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -23,38 +23,48 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Make Gradlew Executable
-        run: chmod +x gradlew
-
-      - name: Ensure Keystores exist
+      - name: Prepare Keystores & Permissions
         run: |
-          if [ ! -f debug.keystore ]; then
-            keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          fi
+          chmod +x gradlew
+          
+          # Generate upload keystore if missing
           if [ ! -f my-upload-key.jks ]; then
-            keytool -genkey -v -keystore my-upload-key.jks -storepass 123456 -alias upload -keypass 123456 -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=RIP OMR,O=RIP,C=BD"
+            keytool -genkeypair -v -keystore my-upload-key.jks -storepass 123456 -alias upload -keypass 123456 -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=RIP OMR,O=RIP,C=BD"
           fi
+          # Copy to app directory so both relative and absolute paths find it
+          cp -f my-upload-key.jks app/my-upload-key.jks 2>/dev/null || true
+
+          # Generate debug keystore if missing
+          if [ ! -f debug.keystore ]; then
+            keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          fi
+          cp -f debug.keystore app/debug.keystore 2>/dev/null || true
 
       - name: Build Release APK
         env:
           STORE_PASSWORD: "123456"
           KEY_PASSWORD: "123456"
-          KEYSTORE_PATH: "my-upload-key.jks"
-        run: ./gradlew assembleRelease --no-daemon --stacktrace
+          KEYSTORE_PATH: "${{ github.workspace }}/my-upload-key.jks"
+        run: ./gradlew assembleRelease --no-daemon --no-configuration-cache --stacktrace
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        if: always()
+        run: ./gradlew assembleDebug --no-daemon --no-configuration-cache --stacktrace
 
       - name: Upload Release APK Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: RIP-OMR-Release-apk
-          path: app/build/outputs/apk/release/app-release.apk
+          path: app/build/outputs/apk/release/*.apk
           retention-days: 30
+          if-no-files-found: ignore
 
       - name: Upload Debug APK Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: RIP-OMR-Debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/*.apk
           retention-days: 30
+          if-no-files-found: ignore
