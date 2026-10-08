@@ -311,6 +311,59 @@ fun HomeScreen(
                     }
                 }
 
+                // Official Printable OMR PDF Download banner
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(AmoledSurface)
+                            .border(1.dp, CyanAccent.copy(alpha = 0.4f), RoundedCornerShape(14.dp))
+                            .clickable { onNavigate(Screen.PrintableSheet) }
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(CyanAccent.copy(alpha = 0.15f))
+                                    .border(1.dp, CyanAccent, CircleShape),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Description,
+                                    contentDescription = "PDF Download",
+                                    tint = CyanAccent,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "ওএমআর শিট PDF ডাউনলোড ও প্রিন্ট",
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 13.sp
+                                )
+                                Text(
+                                    text = "সঠিক মাপের আসল A4 শিট (১০০ প্রশ্ন)",
+                                    color = CyanAccent,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+                        Text(
+                            text = "PDF দেখুন ➔",
+                            color = CyanAccent,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+
                 // Quick Menu Grid (2 columns)
                 item {
                     Text(

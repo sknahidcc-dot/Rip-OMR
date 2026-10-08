@@ -31,7 +31,6 @@ jobs:
           if [ ! -f my-upload-key.jks ]; then
             keytool -genkeypair -v -keystore my-upload-key.jks -storepass 123456 -alias upload -keypass 123456 -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=RIP OMR,O=RIP,C=BD"
           fi
-          # Copy to app directory so both relative and absolute paths find it
           cp -f my-upload-key.jks app/my-upload-key.jks 2>/dev/null || true
 
           # Generate debug keystore if missing
@@ -47,24 +46,9 @@ jobs:
           KEYSTORE_PATH: "${{ github.workspace }}/my-upload-key.jks"
         run: ./gradlew assembleRelease --no-daemon --no-configuration-cache --stacktrace
 
-      - name: Build Debug APK
-        if: always()
-        run: ./gradlew assembleDebug --no-daemon --no-configuration-cache --stacktrace
-
       - name: Upload Release APK Artifact
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: RIP-OMR-Release-apk
           path: app/build/outputs/apk/release/*.apk
           retention-days: 30
-          if-no-files-found: ignore
-
-      - name: Upload Debug APK Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: RIP-OMR-Debug-apk
-          path: app/build/outputs/apk/debug/*.apk
-          retention-days: 30
-          if-no-files-found: ignore
