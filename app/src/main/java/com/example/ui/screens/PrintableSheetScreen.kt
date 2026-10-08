@@ -246,7 +246,7 @@ fun PrintableSheetScreen(
                             if (ok) {
                                 Toast.makeText(
                                     context,
-                                    "PDF ডাউনলোড সম্পন্ন! 'Download' ফোল্ডারে সেভ হয়েছে (rip_omr_sheet_a4.pdf)।",
+                                    "PDF ডাউনলোড সম্পন্ন! 'Download' ফোল্ডারে সেভ হয়েছে (rip_exam_omr_sheet_a4.pdf)।",
                                     Toast.LENGTH_LONG
                                 ).show()
                             } else {
