@@ -1,0 +1,7 @@
+{
+  "name": "RIP OMR",
+  "description": "Professional Black AMOLED Offline OMR Sheet Scanner, Evaluator & Analytics app with instant grading and student management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
